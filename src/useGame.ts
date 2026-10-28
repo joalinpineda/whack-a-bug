@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { calculateHit, GAME_SECONDS, randomType, spawnDelay, targetLifetime } from './game';
-import type { FloatingText, GameStatus, Stats, Target } from './types';
+import type { FloatingText, GameStatus, HitResult, Stats, Target } from './types';
 
-const quips = ['Works on my machine!', 'Cannot reproduce.', 'Regression detected!', 'Who pushed to main?', 'Friday deploy detected!', 'Flaky test escaped!', 'Severity: CRITICAL!', 'QA saves production again!'];
+const quips = ['Who deployed on Friday?', 'Cannot reproduce!', 'QA found it before production!', 'This bug was closed in 2022!', 'Reopened for the 13th time.', 'Automation saved the day!', 'Not a bug. Expected behavior.', 'Joalin vs. The Bugs!'];
 
-export function useGame(onSound: (tone: 'hit' | 'bad' | 'gold') => void) {
+export function useGame() {
   const [status, setStatus] = useState<GameStatus>('idle');
   const [time, setTime] = useState(GAME_SECONDS);
   const [score, setScore] = useState(0);
@@ -14,6 +14,8 @@ export function useGame(onSound: (tone: 'hit' | 'bad' | 'gold') => void) {
   const [floats, setFloats] = useState<FloatingText[]>([]);
   const [message, setMessage] = useState('');
   const nextId = useRef(1);
+  const targetsRef = useRef<Target[]>([]); targetsRef.current = targets;
+  const comboRef = useRef(combo); comboRef.current = combo;
   const timeRef = useRef(time); timeRef.current = time;
   const statusRef = useRef(status); statusRef.current = status;
 
@@ -47,7 +49,7 @@ export function useGame(onSound: (tone: 'hit' | 'bad' | 'gold') => void) {
         setTargets(current => [...current.filter(t => t.hole !== hole), target]);
         window.setTimeout(() => setTargets(current => {
           const escaped = current.some(t => t.id === id);
-          if (escaped && target.type !== 'feature') { setCombo(0); setStats(s => ({ ...s, misses: s.misses + 1 })); }
+          if (escaped && target.type !== 'friendly') { setCombo(0); setStats(s => ({ ...s, misses: s.misses + 1 })); }
           return current.filter(t => t.id !== id);
         }), targetLifetime(GAME_SECONDS - timeRef.current));
       }
@@ -65,20 +67,19 @@ export function useGame(onSound: (tone: 'hit' | 'bad' | 'gold') => void) {
     return () => clearInterval(id);
   }, [status]);
 
-  const hit = useCallback((target: Target) => {
-    if (statusRef.current !== 'playing') return;
+  const hit = useCallback((target: Target): HitResult | null => {
+    if (statusRef.current !== 'playing' || !targetsRef.current.some(current => current.id === target.id)) return null;
+    targetsRef.current = targetsRef.current.filter(current => current.id !== target.id);
     setTargets(current => current.filter(t => t.id !== target.id));
-    setCombo(current => {
-      const result = calculateHit(target.type, current);
-      setScore(s => Math.max(0, s + result.points));
-      setStats(s => ({ hits: s.hits + 1, misses: s.misses, bugsCaught: s.bugsCaught + (result.isBug ? 1 : 0) }));
-      setFloats(f => [...f, { id: target.id, hole: target.hole, text: `${result.points > 0 ? '+' : ''}${result.points}`, kind: result.isBug ? 'good' : 'bad' }]);
-      window.setTimeout(() => setFloats(f => f.filter(x => x.id !== target.id)), 700);
-      onSound(target.type === 'golden' ? 'gold' : result.isBug ? 'hit' : 'bad');
-      if (target.type === 'feature') setMessage("It's a feature, not a bug!");
-      return result.combo;
-    });
-  }, [onSound]);
+    const result = calculateHit(target.type, comboRef.current); comboRef.current = result.combo;
+    setCombo(result.combo); setScore(s => Math.max(0, s + result.points));
+    setStats(s => ({ hits: s.hits + 1, misses: s.misses, bugsCaught: s.bugsCaught + (result.isBug ? 1 : 0) }));
+    setFloats(f => [...f, { id: target.id, hole: target.hole, text: `${result.points > 0 ? '+' : ''}${result.points}`, kind: result.isBug ? 'good' : 'bad' }]);
+    window.setTimeout(() => setFloats(f => f.filter(x => x.id !== target.id)), 700);
+    const reactions = { normal: 'Green bug squashed!', critical: 'Critical bug contained!', flaky: 'Flaky bug finally reproduced!', golden: 'Golden bug squashed!', friendly: 'FALSE POSITIVE — not a bug!' };
+    setMessage(reactions[target.type]);
+    return { targetId: target.id, type: target.type, ...result, comboMilestone: result.combo > 0 && result.combo % 5 === 0 };
+  }, []);
 
   return { status, time, score, combo, targets, stats, floats, message, start, hit, pause: () => setStatus(s => s === 'playing' ? 'paused' : 'playing') };
 }
