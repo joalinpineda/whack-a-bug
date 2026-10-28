@@ -17,3 +17,53 @@
 /* Readable insect targets and unmistakable friendly targets */
 .sprite.insect{animation:bugBob .55s steps(2) infinite}.sprite.insect .sprite-head{border-radius:48% 48% 35% 35%}.sprite.insect .sprite-body{border-radius:48% 48% 35% 35%;box-shadow:inset 0 -8px #0002}.sprite.insect .sprite-body:after{content:"";position:absolute;left:26px;top:0;width:4px;height:42px;background:#172b22}.sprite.insect .wing{position:absolute;top:8px;width:19px;height:28px;border:2px solid #172b22;background:#ffffff18;border-radius:50%;z-index:1}.sprite.insect .wing.left{left:3px}.sprite.insect .wing.right{right:3px}.bug-left{left:34px;transform:rotate(-25deg)}.bug-right{right:34px;transform:rotate(25deg)}.bug-leg{position:absolute;width:22px;height:4px;background:#172b22;z-index:-1;top:57px}.bug-leg.l1{left:8px;transform:rotate(25deg)}.bug-leg.l2{left:5px;top:72px}.bug-leg.l3{left:9px;top:87px;transform:rotate(-25deg)}.bug-leg.r1{right:8px;transform:rotate(-25deg)}.bug-leg.r2{right:5px;top:72px}.bug-leg.r3{right:9px;top:87px;transform:rotate(25deg)}.enemy-normal .sprite-head,.enemy-normal .sprite-body{background:#64ce4c}.enemy-normal{opacity:1}.sprite.enemy-flaky{opacity:.76;filter:drop-shadow(0 0 8px #c875ff);animation:flakyBug .5s steps(2) infinite}.sprite.enemy-flaky .sprite-head,.sprite.enemy-flaky .sprite-body{background:#a25bd0}.sprite.enemy-flaky small{color:#d597ff}.sprite.enemy-critical .sprite-head i{background:#fff04f;box-shadow:0 0 5px #ff392f}.sprite.enemy-critical .sprite-body{transform:scaleX(1.08)}.friendly{filter:drop-shadow(3px 3px #0b0719);animation:friendWave .8s steps(2) infinite}.friend-shape{position:absolute;left:20px;top:23px;width:62px;height:67px;display:grid;place-items:center;border:5px solid #282034;background:#f18429;color:#43233d;font-size:22px;border-radius:48%}.friendly small{color:#68f0d9;left:20px}.friend-1 .friend-shape{height:52px;top:37px;border-radius:5px;background:#f0e3c5;color:#6b3c2b;font-size:10px}.friend-1 .friend-shape:after{content:"";position:absolute;right:-16px;top:9px;width:14px;height:20px;border:5px solid #282034}.steam{position:absolute;left:36px;top:16px;color:#e9e3ff;font-size:11px;font-style:normal;animation:steam 1s infinite}.friend-2 .friend-shape{background:#d8d2bd;color:#3c3342;border-radius:35% 35% 10% 10%}.friend-3 .friend-shape{background:#4fd477;color:#eaffd9;border-radius:8px;font-size:34px}.friend-4 .friend-shape{background:#bceee5cc;color:#4d3973;border-radius:50% 50% 20% 20%}.feature-sign{position:absolute;left:13px;top:65px;padding:3px;background:#eee2b7;border:2px solid #403451;color:#513e6a;font-size:6px;transform:rotate(-5deg)}.impact-flaky>i{background:#bd65ef}.impact-flaky .impact-squash{background:#a25bd0}.impact-normal>i{background:#76e85b}.impact-friendly .impact-squash{background:#ef792a;animation:wrongShake .32s ease-out both}.impact-friendly>i{background:#ff4566}.impact-friendly b{width:150px;text-align:center;color:#ff5271}
 @keyframes bugBob{50%{transform:translateY(-3px)}}@keyframes flakyBug{25%{transform:translateX(-3px);opacity:.5}75%{transform:translateX(3px);opacity:.9}}@keyframes friendWave{50%{transform:rotate(2deg)}}@keyframes steam{to{transform:translateY(-8px);opacity:0}}
+
+/* Phone layout: keep the arcade readable and targets comfortably tappable. */
+@media(max-width:600px){
+  .start-screen,.over-screen{padding:14px 8px;overflow-y:auto}
+  .start-card,.over-card{width:100%;padding:24px 16px}
+  .eyebrow{font-size:9px;letter-spacing:2px}
+  .logo-wrap h1{font-size:clamp(42px,15vw,60px)}
+  .logo-wrap h2{font-size:10px;letter-spacing:1px}
+  .logo-wrap p{font-size:11px}
+  .instructions{margin:18px auto;padding:14px 10px}
+  .instructions p{font-size:12px;line-height:1.55}
+  .instructions small{font-size:8px;line-height:1.5}
+  .legend span{font-size:10px}
+  .arcade-button{min-height:52px;width:min(100%,340px);padding:14px 12px;font-size:12px}
+
+  .hud{height:76px;padding:9px 8px}
+  .hud>div:first-child,.hud>div:last-child{min-width:88px}
+  .hud small{font-size:8px}
+  .hud strong{font-size:21px}
+  .title-mini{font-size:13px;line-height:1.2}
+  .title-mini small{font-size:6px}
+  .controls{height:52px;width:96%}
+  .controls button{width:44px;height:40px;margin-left:5px;font-size:11px}
+  .audio-controls button{width:45px;font-size:9px}
+  .combo{font-size:12px}
+
+  .graveyard{width:100%;height:calc(100svh - 128px);min-height:480px;max-height:none;padding:0 4px 8px;gap:0 2px}
+  .plot{height:32%;min-height:145px}
+  .dirt{width:98%;height:25%}
+  .stone{width:88%;height:62%;min-width:96px;padding-top:24px;border-width:3px}
+  .stone span{font-size:18px}
+  .stone small{font-size:7px}
+  .target{width:110px;height:120px;bottom:34%;transform:translateX(-50%);transform-origin:bottom}
+  .float{font-size:21px}
+  .toast{top:14%;width:92%;padding:12px 10px;text-align:center;font-size:10px;line-height:1.4}
+  .css-pumpkin{left:0}
+  .laptop{right:0}
+  .player-corner{transform:scale(.68);transform-origin:bottom left}
+
+  .board-interactive .game-mallet{transform:translate(-35px,-18px) rotate(-24deg) scale(.95)}
+  .impact b{font-size:16px}
+}
+
+@media(max-width:380px){
+  .hud>div:first-child,.hud>div:last-child{min-width:78px}
+  .hud strong{font-size:18px}
+  .title-mini{font-size:11px}
+  .stone{min-width:88px}
+  .target{width:104px}
+}
